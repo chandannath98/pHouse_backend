@@ -80,7 +80,9 @@ router.get("/", authMiddleware, async (req, res) => {
       },
     ]);
 
-    res.status(200).json(passwords);
+    res.status(200).json({
+        "data":passwords
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

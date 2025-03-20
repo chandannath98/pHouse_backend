@@ -7,7 +7,9 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const platforms = await Platform.find();
-    res.json(platforms);
+    res.json({
+        "data":platforms
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
