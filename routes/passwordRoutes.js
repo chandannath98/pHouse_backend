@@ -2,6 +2,7 @@ const express = require("express");
 const Password = require("../models/Password");
 const Platform = require("../models/Platform");
 const authMiddleware = require("../middleware/authMiddleware");
+const { default: mongoose } = require("mongoose");
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.post("/", authMiddleware, async (req, res) => {
       platformId = newPlatform.platformId; // Use the new platform's ID
     }
 
-    const newPassword = new Password({ user: req.user.id, platform: platformId, username, password });
+    const newPassword = new Password({ user: req.user.id, platformId: platformId, username, password });
     await newPassword.save();
     res.status(201).json({
         message:"Password Saved Successfully"
@@ -38,7 +39,47 @@ router.post("/", authMiddleware, async (req, res) => {
 // Get user-specific passwords
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const passwords = await Password.find({ user: req.user.id });
+    const userId = new mongoose.Types.ObjectId(req.user.id); 
+    const passwords = await Password.aggregate([
+      {
+        $match: { user: userId }, // Fetch only passwords of the logged-in user
+      },
+      {
+        $lookup: {
+            from: "platforms",
+            localField: "platformId",
+            foreignField: "platformId",
+            as: "platformDetails"
+          }
+      },
+      {
+        $unwind: {
+          path: "$platformDetails",
+          preserveNullAndEmptyArrays: true, // Keep passwords even if platform is missing
+        },
+      },
+      {
+        $addFields: {
+          platformDetails: {
+            $ifNull: [
+              "$platformDetails",
+              {
+                platformId: "custom",
+                platformName: "Custom Platform",
+                platformLogo: "https://via.placeholder.com/100",
+                platformColor: "#FFFFFF",
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          user: 0, // Exclude user field from response
+        },
+      },
+    ]);
+
     res.status(200).json(passwords);
   } catch (error) {
     res.status(500).json({ message: error.message });
