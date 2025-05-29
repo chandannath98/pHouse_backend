@@ -7,9 +7,54 @@ const { default: mongoose } = require("mongoose");
 const router = express.Router();
 
 // Add a password entry
+
+/**
+ * @swagger
+ * /api/passwords:
+ *   get:
+ *     summary: Get all passwords for the logged-in user
+ *     description: Fetch all saved passwords for the authenticated user.
+ *     tags:
+ *       - Passwords
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved passwords.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   platformId:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   password:
+ *                     type: string
+ *                   platformDetails:
+ *                     type: object
+ *                     properties:
+ *                       platformId:
+ *                         type: string
+ *                       platformName:
+ *                         type: string
+ *                       platformLogo:
+ *                         type: string
+ *                       platformColor:
+ *                         type: string
+ *       401:
+ *         description: Unauthorized, token missing or invalid.
+ *       500:
+ *         description: Internal server error.
+ */
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    let { platformId, platformName, username, password } = req.body;
+    let { platformId, platformName, username, password,type } = req.body;
 
     // If platformId is "0", create a new platform
     if (platformId === "0") {
@@ -26,7 +71,7 @@ router.post("/", authMiddleware, async (req, res) => {
       platformId = newPlatform.platformId; // Use the new platform's ID
     }
 
-    const newPassword = new Password({ user: req.user.id, platformId: platformId, username, password });
+    const newPassword = new Password({ user: req.user.id, platformId: platformId, username, password,type });
     await newPassword.save();
     res.status(201).json({
         message:"Password Saved Successfully"
@@ -91,10 +136,10 @@ router.get("/", authMiddleware, async (req, res) => {
 // Edit a password entry
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password,type } = req.body;
     const updatedPassword = await Password.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
-      { username, password },
+      { username, password,type },
       { new: true }
     );
 
