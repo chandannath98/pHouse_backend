@@ -5,7 +5,10 @@ const PasswordSchema = new mongoose.Schema({
   platformId: { type: String, required: true },
   username: { type: String, required: true },
   password: { type: String, required: true }, // Later, encrypt this field
-  type: {type:String, required:true}
+  type: {type:String, required:true},
+  ciphertext:{ type: String, required: true },
+  iv:{ type: String, required: true },
+  salt:{ type: String, required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Password", PasswordSchema);

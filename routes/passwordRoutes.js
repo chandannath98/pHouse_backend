@@ -54,7 +54,7 @@ const router = express.Router();
  */
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    let { platformId, platformName, username, password,type } = req.body;
+    let { platformId, platformName, username, password,type, ciphertext, iv, salt } = req.body;
 
     // If platformId is "0", create a new platform
     if (platformId === "0") {
@@ -71,7 +71,7 @@ router.post("/", authMiddleware, async (req, res) => {
       platformId = newPlatform.platformId; // Use the new platform's ID
     }
 
-    const newPassword = new Password({ user: req.user.id, platformId: platformId, username, password,type });
+    const newPassword = new Password({ user: req.user.id, platformId: platformId, username, password,type,  ciphertext, iv, salt });
     await newPassword.save();
     res.status(201).json({
         message:"Password Saved Successfully"
@@ -136,10 +136,10 @@ router.get("/", authMiddleware, async (req, res) => {
 // Edit a password entry
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { username, password,type } = req.body;
+    const { username, password,type,platformId, ciphertext, iv, salt } = req.body;
     const updatedPassword = await Password.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
-      { username, password,type },
+      { username, password,type,platformId, ciphertext, iv, salt },
       { new: true }
     );
 
