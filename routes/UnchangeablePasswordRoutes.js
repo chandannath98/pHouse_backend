@@ -1,4 +1,10 @@
+const express = require("express");
+
+const authMiddleware = require("../middleware/authMiddleware");
 const UnChnagablePassword = require("../models/UnChnagablePassword");
+
+
+const router = express.Router();
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
@@ -39,3 +45,5 @@ router.get("/", authMiddleware, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+module.exports = router;
