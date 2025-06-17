@@ -7,6 +7,7 @@ const setupSwagger = require("./swagger");
 const authMiddleware = require("./middleware/authMiddleware");
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 
