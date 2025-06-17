@@ -27,13 +27,44 @@ mongoose.connect(process.env.MONGO_URI, {
 // Swagger Setup
 setupSwagger(app);
 
-app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+// Ensure uploads directory exists
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
-const upload = multer({ dest: 'uploads/' });
+// Configure multer to store files with original filename
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOADS_DIR);
+  },
+  filename: (req, file, cb) => {
+    // You can add custom logic here to rename files (e.g., add timestamp)
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // Max file size: 10MB
+});
 
 // Upload endpoint
 app.post('/api/upload', upload.single('file'), (req, res) => {
-  res.send({ message: 'File uploaded!' });
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    res.status(200).json({
+      message: 'File uploaded successfully',
+      fileName: req.file.originalname,
+      path: `/uploads/${req.file.originalname}`
+    });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Get list of uploaded files
