@@ -6,6 +6,7 @@ const Platform = require("./models/Platform");
 const setupSwagger = require("./swagger");
 const authMiddleware = require("./middleware/authMiddleware");
 const multer = require('multer');
+const path = require('path');
 
 const app = express();
 
@@ -25,11 +26,32 @@ mongoose.connect(process.env.MONGO_URI, {
 // Swagger Setup
 setupSwagger(app);
 
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
 const upload = multer({ dest: 'uploads/' });
 
-app.post('/api/upload',authMiddleware, upload.single('file'), (req, res) => {
-  console.log('File uploaded:', req.file);
-  res.status(200).send({ message: 'File uploaded!' });
+// Upload endpoint
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  res.send({ message: 'File uploaded!' });
+});
+
+// Get list of uploaded files
+app.get('/api/files', (req, res) => {
+  const dirPath = path.join(__dirname, 'uploads');
+  fs.readdir(dirPath, (err, files) => {
+    if (err) return res.status(500).send('Unable to scan files');
+    res.json(files);
+  });
+});
+
+// Download specific file route
+app.get('/api/download-passwordmanager-apk', (req, res) => {
+  const filePath = path.join(__dirname, 'uploads', 'passwordmanager.apk');
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, 'passwordmanager.apk');
+  } else {
+    res.status(404).send('File not found');
+  }
 });
 
 
