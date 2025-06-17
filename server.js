@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const Platform = require("./models/Platform");
 const setupSwagger = require("./swagger");
+const authMiddleware = require("./middleware/authMiddleware");
+const multer = require('multer');
 
 const app = express();
 
@@ -22,6 +24,13 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Swagger Setup
 setupSwagger(app);
+
+const upload = multer({ dest: 'uploads/' });
+
+app.post('/upload',authMiddleware, upload.single('file'), (req, res) => {
+  console.log('File uploaded:', req.file);
+  res.status(200).send({ message: 'File uploaded!' });
+});
 
 
 // Routes
