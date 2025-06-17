@@ -27,7 +27,7 @@ setupSwagger(app);
 
 const upload = multer({ dest: 'uploads/' });
 
-app.post('/upload',authMiddleware, upload.single('file'), (req, res) => {
+app.post('/api/upload',authMiddleware, upload.single('file'), (req, res) => {
   console.log('File uploaded:', req.file);
   res.status(200).send({ message: 'File uploaded!' });
 });
