@@ -31,7 +31,7 @@ router.post("/registeradmin", async (req, res) => {
     const { name, email, password } = req.body;
     const existingUser = await Admin.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
-
+    
     const newUser = new Admin({ name, email, password });
     await newUser.save();
 
@@ -49,6 +49,15 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+    if(req?.body?.fcm_token){
+      const updatedUser = await User.findOneAndUpdate(
+        { email },
+        { fcm_token:req?.body?.fcm_token },
+        { new: true }
+      );
+    }
+     
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
