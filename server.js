@@ -9,9 +9,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const admin = require('firebase-admin');
-const serviceAccount = require('./service-account.json');
 const app = express();
 
+const encodedCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+
+const filePath = '/tmp/service-account.json';
+
+fs.writeFileSync(filePath, Buffer.from(encodedCredentials, 'base64'));
 
 const cron = require('node-cron');
 
@@ -58,7 +62,7 @@ const upload = multer({
 
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath  )
 });
 
 
