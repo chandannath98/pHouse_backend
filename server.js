@@ -63,40 +63,40 @@ admin.initializeApp({
 
 
 
-cron.schedule('0 * * * *', () => {
-  const message = {
-    token: 'dTZTYWP2TCGfMdMPLJcmp1:APA91bElHI87c9Ixi-MKOqZ97ggczSZrwv6OxP2oGQSmMc4C7gtlwFpToxwYWqIHFyy8OeOfSZgnVVD9xA4cfi5qzQaBmYIUzyTvT42ZXV4dAsXY2DQCybc',
-    // "data": {
-    //   "type": "reply",
-    //   "title": "New message from Rahul",
-    //   "body": "Are you coming?333",
-    //   "conversation_id": "chat_1234"
-    // }
+// cron.schedule('0 * * * *', () => {
+//   const message = {
+//     token: 'dTZTYWP2TCGfMdMPLJcmp1:APA91bElHI87c9Ixi-MKOqZ97ggczSZrwv6OxP2oGQSmMc4C7gtlwFpToxwYWqIHFyy8OeOfSZgnVVD9xA4cfi5qzQaBmYIUzyTvT42ZXV4dAsXY2DQCybc',
+//     // "data": {
+//     //   "type": "reply",
+//     //   "title": "New message from Rahul",
+//     //   "body": "Are you coming?333",
+//     //   "conversation_id": "chat_1234"
+//     // }
 
-    "data": {
-      "type": "default",
-      "title": "Security Alert",
-      "body": "Save your passwords in Password Manager and forget the tension"
-    }
+//     "data": {
+//       "type": "default",
+//       "title": "Security Alert",
+//       "body": "Save your passwords in Password Manager and forget the tension"
+//     }
 
-    // data: {
-    //   type: "image",
-    //   title: "Promo Alert",
-    //   body: "Watch now!",
-    //   image: "https://picsum.photos/200/300"
-    // }
-  };
+//     // data: {
+//     //   type: "image",
+//     //   title: "Promo Alert",
+//     //   body: "Watch now!",
+//     //   image: "https://picsum.photos/200/300"
+//     // }
+//   };
 
-  admin.messaging().send(message)
-    .then(() => res.send('Data message sent'))
-    .catch(err => {
-      console.error(err);
-      res.status(500).send('Failed to send message');
-    });
-}, {
-  scheduled: true,
-  timezone: "Asia/Kolkata" // Example: For New Delhi time zone
-});
+//   admin.messaging().send(message)
+//     .then(() => res.send('Data message sent'))
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).send('Failed to send message');
+//     });
+// }, {
+//   scheduled: true,
+//   timezone: "Asia/Kolkata" // Example: For New Delhi time zone
+// });
 
 
 
